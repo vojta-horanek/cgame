@@ -36,6 +36,7 @@ void render_map(WINDOW* win)
 
 #include "maps.h"
 
+    /* render the map, it draw each COL STRECH times */
     const int STRECH = 2;
     unsigned int option = COLOR_PAIR(1);
     int RENDER_COL = 0;
@@ -90,7 +91,6 @@ WINDOW** init_cointainers()
     wattron(container[1], COLOR_PAIR(1));
     box(container[1], ACS_VLINE, ACS_HLINE);
     wattroff(container[1], COLOR_PAIR(1));
-    wprintw(container[0], "%d COLS, %d LINES", w, h);
     wrefresh(container[0]);
     wrefresh(container[1]);
 
