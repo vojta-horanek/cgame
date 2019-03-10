@@ -10,6 +10,7 @@ void render_init();
 void render_end();
 void render();
 WINDOW* newwin_center(int y, int x);
+WINDOW** init_cointainers();
 void newdialog(char *buffer, const char *message);
 
 #endif

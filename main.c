@@ -6,14 +6,11 @@
 #include "player.h"
 #include "render.h"
 
-void print_player(PLAYER player){
+void print_player(PLAYER player, WINDOW *win){
 
-	printf("Name: %s\nHealth: %hu\nInv_count: %d\n", player.name, player.health, player.inv_count);
-	for(int i = 0; i < player.inv_count; i++) {
-	
-		printf("%d: %s\n", (player.inventory + i)->id, (player.inventory + i)->name);
-	
-	}
+	mvwprintw(win, 1, 1, "Name: %s Health: %hu Inv_count: %d", player.name, player.health, player.inv_count);
+	for(int i = 0; i < player.inv_count; i++)	
+		mvwprintw(win, 2+i, 1, "%d: %s\n", (player.inventory + i)->id, (player.inventory + i)->name);
 }
 
 int main(void) {
@@ -28,11 +25,14 @@ int main(void) {
 	
 	render_init();
 	
+	WINDOW **container = init_cointainers();
 	newdialog(player->name, "What is your name?");
-	
+
+	print_player(*player, container[1]);
+	wrefresh(container[1]);
+	getch();
+
 	render_end();
-	
-	print_player(*player);
 
 	/* free memory used by game, ncurses will leak memory, but its normal */
 	for(int i = 0; i<player->inv_count; i++)
