@@ -3,5 +3,5 @@ CFLAGS = -Wall
 
 SRC=$(wildcard *.c)
 
-game: $(SRC)
+main: $(SRC)
 	gcc -o $@ $^ $(CFLAGS) $(LIBS)
