@@ -36,8 +36,9 @@ WINDOW** init_cointainers() {
 	
 	static WINDOW *container[2];
 	/* split the terminal window to 3/4 and 1/4 */
-	container[0] = newwin(h/4*3, w, 0, 0);
-	container[1] = newwin(h/4, w, h-h/4, 0);
+	const int three_quaters = h/4*3;
+	container[0] = newwin(three_quaters, w, 0, 0);
+	container[1] = newwin(h-three_quaters, w, three_quaters, 0);
 	/* draw the oulines */
 	wattron(container[0], COLOR_PAIR(1));
 	box(container[0], ACS_VLINE, ACS_HLINE);
@@ -48,7 +49,6 @@ WINDOW** init_cointainers() {
 	/* show them, maybe not so useful */
 	wrefresh(container[0]);
 	wrefresh(container[1]);
-
 	
 	return container;
 
