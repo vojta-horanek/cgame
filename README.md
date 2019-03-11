@@ -2,7 +2,7 @@
 
 Making this just for fun to up my skills in C
 
-## Uses
+**Uses**
 * C
 * ncurses
 
