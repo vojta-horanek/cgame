@@ -1,4 +1,5 @@
 # CGame
 
-Even thought github sees this as objective C it is in C
-**thank you**
+Making this just for fun to up my skills in C
+
+*Segmentation fault (core dumped)*
