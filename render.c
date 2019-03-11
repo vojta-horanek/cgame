@@ -9,15 +9,27 @@ void render_init()
         init_pair(1, COLOR_BLACK, COLOR_WHITE);
         init_pair(2, COLOR_WHITE, COLOR_BLACK);
         init_pair(3, COLOR_YELLOW, COLOR_BLACK);
-        init_pair(4, COLOR_WHITE, COLOR_WHITE);
-        init_pair(5, COLOR_GREEN, COLOR_GREEN);
-        init_pair(6, COLOR_BLUE, COLOR_BLUE);
-        init_pair(7, COLOR_YELLOW, COLOR_YELLOW);
-        init_pair(8, COLOR_RED, COLOR_RED);
+
+        init_pair(10, COLOR_YELLOW, COLOR_BLACK);
+        init_pair(11, COLOR_YELLOW, COLOR_RED);
+        init_pair(12, COLOR_YELLOW, COLOR_GREEN);
+        init_pair(13, COLOR_YELLOW, COLOR_YELLOW);
+        init_pair(14, COLOR_YELLOW, COLOR_BLUE);
+        init_pair(15, COLOR_YELLOW, COLOR_MAGENTA);
+        init_pair(16, COLOR_YELLOW, COLOR_CYAN);
+        init_pair(17, COLOR_YELLOW, COLOR_WHITE);
+
+        init_pair(20, COLOR_BLACK, COLOR_BLACK);
+        init_pair(21, COLOR_RED, COLOR_RED);
+        init_pair(22, COLOR_GREEN, COLOR_GREEN);
+        init_pair(23, COLOR_YELLOW, COLOR_YELLOW);
+        init_pair(24, COLOR_BLUE, COLOR_BLUE);
+        init_pair(25, COLOR_MAGENTA, COLOR_MAGENTA);
+        init_pair(26, COLOR_CYAN, COLOR_CYAN);
+        init_pair(27, COLOR_WHITE, COLOR_WHITE);
     }
     keypad(stdscr, TRUE);
     noecho();
-    curs_set(0);
     refresh();
 }
 
@@ -31,41 +43,72 @@ void render()
 {
 }
 
+unsigned int _get_color_pair(char c)
+{
+    switch (c) {
+    case 'x': /* black */
+    default:
+        return COLOR_PAIR(10);
+    case 'r': /* red */
+        return COLOR_PAIR(11);
+    case 'g': /* green */
+        return COLOR_PAIR(12);
+    case 'y': /* yellow */
+        return COLOR_PAIR(13);
+    case 'b': /* blue */
+        return COLOR_PAIR(14);
+    case 'm': /* magenta */
+        return COLOR_PAIR(15);
+    case 'c': /* cyan */
+        return COLOR_PAIR(16);
+    case 'w': /* white */
+        return COLOR_PAIR(17);
+
+        /* blocked variants */
+    case 'X': /* black */
+        return COLOR_PAIR(20);
+    case 'R': /* red */
+        return COLOR_PAIR(21);
+    case 'G': /* green */
+        return COLOR_PAIR(22);
+    case 'Y': /* yellow */
+        return COLOR_PAIR(23);
+    case 'B': /* blue */
+        return COLOR_PAIR(24);
+    case 'M': /* magenta */
+        return COLOR_PAIR(25);
+    case 'C': /* cyan */
+        return COLOR_PAIR(26);
+    case 'W': /* white */
+        return COLOR_PAIR(27);
+    }
+}
+
 void render_map(WINDOW* win)
 {
 
-#include "maps.h"
+    char* map_data = NULL;
+    int cols = 0, rows = 0;
 
-    /* render the map, it draw each COL STRECH times */
-    const int STRECH = 2;
-    unsigned int option = COLOR_PAIR(1);
-    int RENDER_COL = 0;
-    for (int COL = 0; COL < MAP_COLS; COL++) {
-        for (int t = 0; t < STRECH; t++) {
-            for (int LINE = 0; LINE < MAP_LINES; LINE++) {
-                switch (MAP_ONE[LINE][COL]) {
-                case 'b':
-                    option = COLOR_PAIR(4);
-                    break;
-                case 'f':
-                    option = COLOR_PAIR(5);
-                    break;
-                case 'w':
-                    option = COLOR_PAIR(6);
-                    break;
-                case 'x':
-                    option = COLOR_PAIR(7);
-                    break;
-                case 'm':
-                    option = COLOR_PAIR(8);
-                    break;
-                }
+    const int RES = read_map(&map_data, &cols, &rows);
+    if (RES == -1) {
+        wprintw(win, "Error reading map (err -1)");
+        return;
+    }
 
-                mvwaddch(win, LINE + 1, RENDER_COL + 1, MAP_ONE[LINE][COL] | option);
-            }
-            RENDER_COL++;
+    int nth_c = 0;
+    char c = 0;
+    for (int y = 0; y < rows; y++) {
+        for (int x = 0; x < cols; x++) {
+            c = map_data[nth_c++];
+            char p = ' ';
+            if (isupper(c))
+                p = 'x';
+            mvwaddch(win, y + 1, x + 1, p | _get_color_pair(c));
         }
     }
+
+    free(map_data);
 }
 
 WINDOW** init_cointainers()
@@ -85,14 +128,12 @@ WINDOW** init_cointainers()
     container[0] = newwin(three_quaters, w, 0, 0);
     container[1] = newwin(h - three_quaters, w, three_quaters, 0);
     /* draw the oulines */
-    wattron(container[0], COLOR_PAIR(1));
-    box(container[0], ACS_VLINE, ACS_HLINE);
-    wattroff(container[0], COLOR_PAIR(1));
-    wattron(container[1], COLOR_PAIR(1));
-    box(container[1], ACS_VLINE, ACS_HLINE);
-    wattroff(container[1], COLOR_PAIR(1));
-    wrefresh(container[0]);
-    wrefresh(container[1]);
+    for (int i = 0; i < 2; i++) {
+        wattron(container[i], COLOR_PAIR(1));
+        box(container[i], ACS_VLINE, ACS_HLINE);
+        wattroff(container[i], COLOR_PAIR(1));
+        wrefresh(container[i]);
+    }
 
     return container;
 }
@@ -112,7 +153,6 @@ void newdialog(char* buffer, /* shold be allocated to atleast the withd of the d
     /* width of the dialog */
     const int W = 50;
 
-    curs_set(1); /* disable cursor */
     WINDOW* win = newwin_center(3, W);
     wattron(win, COLOR_PAIR(3));
     box(win, ACS_VLINE, ACS_HLINE);
@@ -180,5 +220,4 @@ void newdialog(char* buffer, /* shold be allocated to atleast the withd of the d
     delwin(win);
     /* move to the begining and disable cursor */
     move(0, 0);
-    curs_set(0);
 }

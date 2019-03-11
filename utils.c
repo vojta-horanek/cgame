@@ -33,3 +33,43 @@ size_t trimwhitespace(char* out, size_t len, const char* str)
 
     return out_size;
 }
+
+int read_map(char** map_data, int* cols, int* rows)
+{
+
+    FILE* f = fopen("map.dat", "r");
+
+    if (f == NULL) 
+        return -1;
+
+    int allocated = 0;
+    int read = 0;
+    int c = 0;
+    while((c = getc(f)) != '\n')
+        if (c != ',')
+            (*cols)++;
+
+    rewind(f);
+
+    while((c = getc(f)) != EOF) {
+        if (c == ',')
+            continue;
+        else if (c == '\n')
+            (*rows)++;
+        else {
+            if (allocated >= read) {
+                char* temp = realloc(*map_data, allocated + 10);
+                if (temp == NULL)
+                    return -1;
+                memset(temp+allocated, 0, 10);
+                *map_data = temp;
+                allocated += 10;
+            }
+
+            (*map_data)[read++] = c;
+        }
+    }
+    fclose(f);
+    return read;
+}
+

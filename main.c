@@ -18,11 +18,12 @@ int main(void)
 
     render_init();
 
-    if (COLS != 174 || LINES != 49){
-        printf("Please resize your terminal to 49(lines)*173(collums)");
+    if (COLS != 174 || LINES != 49) {
+        render_end();
+        printf("Please resize your terminal to 49(lines)*173(collums)\n");
         return 1;
     }
-    
+
     PLAYER* player = malloc(sizeof(PLAYER));
     if (player == NULL)
         return 1;
@@ -36,14 +37,37 @@ int main(void)
 
     print_player(*player, container[1]);
     render_map(container[0]);
-    wbkgd(container[0], COLOR_PAIR(1));
 
-    mvprintw(LINES-2, 1, "Press q to quit");
+    mvprintw(LINES - 2, 1, "Press q to quit");
     refresh();
     wrefresh(container[0]);
     wrefresh(container[1]);
 
-    while(getch() != 'q');
+    int key, p_x = 10, p_y = 10;
+    while ((key = getch()) != 'q') {
+
+        switch (key) {
+        case KEY_UP:
+        case 'w':
+            p_y--;
+            break;
+        case KEY_DOWN:
+        case 's':
+            p_y++;
+            break;
+        case KEY_LEFT:
+        case 'a':
+            p_x--;
+            break;
+        case KEY_RIGHT:
+        case 'd':
+            p_x++;
+            break;
+        }
+
+        move(p_y, p_x);
+        refresh();
+    }
 
     render_end();
 

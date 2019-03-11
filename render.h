@@ -2,7 +2,6 @@
 #define RENDER_H
 
 #include "utils.h"
-#include "const.h"
 #include <ctype.h>
 #include <ncurses.h>
 #include <string.h>
